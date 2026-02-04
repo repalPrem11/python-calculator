@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'dockerhub-creds' // Jenkins credential ID
         DOCKER_HUB_REPO = 'premrepal/python-calculator' // Your Docker Hub repo
-        IMAGE_TAG = "latest" // or you can use "${env.BUILD_NUMBER}" for unique tags
+        IMAGE_TAG = "${BUILD_NUMBER}" // or you can use "${env.BUILD_NUMBER}" for unique tags
     }
 
     stages {
