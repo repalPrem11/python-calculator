@@ -66,6 +66,14 @@ pipeline {
                 }
             }
         }
+        stage('Cleanup Old Docker Images') {
+            steps {
+                script {
+                    // Optional: Remove local old images to save space
+                    sh "docker images | grep ${DOCKER_HUB_REPO} | awk '{print \$3}' | xargs -r docker rmi -f"
+                }
+            }
+        }
     }
 
     post {
