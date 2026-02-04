@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: python-calculator-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: python-calculator
   ports:
-    - protocol: TCP
-      port: 80
+    - port: 80
       targetPort: 5000
 
