@@ -7,7 +7,7 @@ pipeline {
         IMAGE_TAG = "${BUILD_NUMBER}"                        // Unique image tag
         GIT_REPO = 'https://github.com/repalPrem11/python-calculator.git'
         GIT_BRANCH = 'main'
-        GIT_CREDENTIALS = 'github-creds'             // Jenkins credentials ID for Git
+        GIT_CREDENTIALS = 'github-creds'                    // Jenkins credentials ID for Git (username + PAT)
     }
 
     stages {
@@ -53,19 +53,23 @@ pipeline {
         stage('Update Deployment Manifest in Git') {
             steps {
                 script {
-                    sh """
-                    cd k8s
-                    # Update the Deployment YAML with the new image tag
-                    sed -i "s|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${IMAGE_TAG}|" deployment.yaml
-                    git add deployment.yaml
-                    git config user.email "jenkins@example.com"
-                    git config user.name "Jenkins CI"
-                    git commit -m "Update python-calculator image to build ${IMAGE_TAG}"
-                    git push origin ${GIT_BRANCH}
-                    """
+                    // Inject Git username + PAT from Jenkins credentials
+                    withCredentials([usernamePassword(credentialsId: "${GIT_CREDENTIALS}", usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                        sh """
+                        cd k8s
+                        # Update the Deployment YAML with the new image tag
+                        sed -i "s|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${IMAGE_TAG}|" deployment.yaml
+                        git add deployment.yaml
+                        git config user.email "jenkins@example.com"
+                        git config user.name "Jenkins CI"
+                        git commit -m "Update python-calculator image to build ${IMAGE_TAG}"
+                        git push https://${GIT_USER}:${GIT_TOKEN}@github.com/repalPrem11/python-calculator.git ${GIT_BRANCH}
+                        """
+                    }
                 }
             }
         }
+
         stage('Cleanup Old Docker Images') {
             steps {
                 script {
@@ -78,7 +82,7 @@ pipeline {
 
     post {
         success {
-            echo "Docker image built, pushed, and Deployment manifest updated successfully!"
+            echo "Docker image built, pushed, manifest updated, and old images cleaned successfully!"
         }
         failure {
             echo "Build, push, or Git update failed."
