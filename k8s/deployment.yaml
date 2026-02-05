@@ -44,7 +44,7 @@ spec:
         # ✅ Readiness Probe (traffic control)
         readinessProbe:
           httpGet:
-            path: /
+            path: /health
             port: 5000
           initialDelaySeconds: 5
           periodSeconds: 5
@@ -53,7 +53,7 @@ spec:
         # ✅ Liveness Probe (self-healing)
         livenessProbe:
           httpGet:
-            path: /
+            path: /health
             port: 5000
           initialDelaySeconds: 15
           periodSeconds: 10
