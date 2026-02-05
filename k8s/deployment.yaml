@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: python-calculator
-        image: premrepal/python-calculator:17
+        image: premrepal/python-calculator:18
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
       - name: python-calculator
-        image: premrepal/python-calculator:17
+        image: premrepal/python-calculator:18
         imagePullPolicy: IfNotPresent
 
         ports:
