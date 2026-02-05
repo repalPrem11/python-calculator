@@ -19,3 +19,53 @@ spec:
         ports:
         - containerPort: 5000
 
+        apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-calculator
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: python-calculator
+  template:
+    metadata:
+      labels:
+        app: python-calculator
+    spec:
+      containers:
+      - name: python-calculator
+        image: premrepal/python-calculator:17
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 5000
+
+        # ✅ Readiness Probe (traffic control)
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 3
+
+        # ✅ Liveness Probe (self-healing)
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 3
+
+        # ✅ Resource limits (SRE must-have)
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+
+
